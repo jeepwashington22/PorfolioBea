@@ -29,6 +29,52 @@ function buildParticles(count) {
   })
 }
 
+// Reveals an element with a GPU-only transform/opacity transition the
+// first time it enters the viewport. No scroll listeners are used —
+// IntersectionObserver does the work off the main thread.
+function useRevealOnView() {
+  const ref = useRef(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.unobserve(entry.target)
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return [ref, isVisible]
+}
+
+function BentoCard({ className = "", children }) {
+  const [ref, isVisible] = useRevealOnView()
+
+  return (
+    <div
+      ref={ref}
+      className={
+        "transform-gpu transition-[transform,opacity] duration-500 ease-out will-change-transform " +
+        (isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0") +
+        " " +
+        className
+      }
+    >
+      {children}
+    </div>
+  )
+}
+
 export default function MagicBento({
   textAutoHide = true,
   enableStars = true,
@@ -43,7 +89,8 @@ export default function MagicBento({
   disableAnimations = false,
 }) {
   const rootRef = useRef(null)
-  const [spot, setSpot] = useState({ x: 0, y: 0, visible: false })
+  const spotlightElRef = useRef(null)
+  const rafRef = useRef(null)
   const [ripples, setRipples] = useState([])
 
   const particles = useMemo(() => buildParticles(particleCount), [particleCount])
@@ -60,22 +107,32 @@ export default function MagicBento({
 
   const radius = clampNumber(spotlightRadius, 400)
 
+  // Spotlight tracking is applied directly to the DOM (no React state, no
+  // re-render) and batched with requestAnimationFrame so it never fires
+  // more than once per frame. This was previously the main cause of scroll
+  // jank: setSpot() on every mousemove pixel re-rendered the whole card
+  // grid, including all 6 cards and the particle field.
   const onMove = (e) => {
     if (!enableSpotlight) return
     const el = rootRef.current
-    if (!el) return
+    const spotEl = spotlightElRef.current
+    if (!el || !spotEl) return
 
     const rect = el.getBoundingClientRect()
-    setSpot({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      visible: true,
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    rafRef.current = requestAnimationFrame(() => {
+      spotEl.style.opacity = "1"
+      spotEl.style.background = `radial-gradient(${radius}px circle at ${x}px ${y}px, rgba(${glowColor}, 0.28), rgba(0,0,0,0) 60%)`
     })
   }
 
   const onLeave = () => {
     if (!enableSpotlight) return
-    setSpot((s) => ({ ...s, visible: false }))
+    const spotEl = spotlightElRef.current
+    if (spotEl) spotEl.style.opacity = "0"
   }
 
   const onClick = (e) => {
@@ -129,12 +186,8 @@ export default function MagicBento({
       >
         {enableSpotlight ? (
           <div
-            className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            style={{
-              background: spot.visible
-                ? `radial-gradient(${radius}px circle at ${spot.x}px ${spot.y}px, rgba(${glowColor}, 0.28), rgba(0,0,0,0) 60%)`
-                : "transparent",
-            }}
+            ref={spotlightElRef}
+            className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 will-change-[opacity]"
           />
         ) : null}
 
@@ -144,7 +197,7 @@ export default function MagicBento({
               <span
                 key={p.id}
                 className={
-                  "absolute block rounded-full bg-white/70 " +
+                  "absolute block rounded-full bg-white/70 will-change-transform " +
                   (disableAnimations ? "" : "animate-[magicFloat_var(--d)_ease-in-out_infinite]")
                 }
                 style={{
@@ -166,7 +219,7 @@ export default function MagicBento({
           ? ripples.map((r) => (
               <span
                 key={r.id}
-                className="pointer-events-none absolute rounded-full"
+                className="pointer-events-none absolute rounded-full will-change-transform"
                 style={{
                   left: r.x,
                   top: r.y,
@@ -186,9 +239,11 @@ export default function MagicBento({
           {"@keyframes magicFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes magicRipple{0%{opacity:.9;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(26)}}"}
         </style>
 
-        <div className="grid gap-4 lg:grid-cols-3">
+        {/* Single-column stack: each Featured Section card reads as its
+            own overview, full-width, with consistent vertical spacing. */}
+        <div className="flex flex-col gap-4">
           {/* Projects */}
-          <div className="group/project rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5 overflow-hidden">
+          <BentoCard className="group/project rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5 overflow-hidden">
             <div className="flex items-start justify-between relative z-10">
               <div>
                 <p className={"text-sm font-semibold text-zinc-100 " + fadeTextClass}>
@@ -203,21 +258,21 @@ export default function MagicBento({
               </div>
             </div>
 
-            {/* --- REPLACED WIREFRAME WITH YOUR IMAGE --- */}
-            <div className="mt-4 relative h-[180px] w-full overflow-hidden rounded-xl border border-zinc-800/70 bg-zinc-900/40">
-              <img 
-                src={projectsPreview} 
-                alt="Projects Preview" 
-                className="h-full w-full object-cover object-top opacity-70 transition-transform duration-500 group-hover/project:scale-105 group-hover/project:opacity-100"
+            <div className="mt-4 relative w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden rounded-xl border border-zinc-800/70 bg-zinc-900/40">
+              <img
+                src={projectsPreview}
+                alt="Projects Preview"
+                className="absolute inset-0 h-full w-full object-cover object-top opacity-70 transition-transform duration-500 group-hover/project:scale-105 group-hover/project:opacity-100"
               />
-              {/* Optional: Adds a dark fade at the bottom so it blends nicely */}
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent pointer-events-none" />
             </div>
-          </div>
-          {/* REMOVED LEFTOVER WIREFRAME DIV HERE */}
+            <p className={"mt-3 text-[11px] text-zinc-500 " + fadeTextClass}>
+              ResQWave, and 5 more shipped projects.
+            </p>
+          </BentoCard>
 
           {/* About Me */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5">
+          <BentoCard className="rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5">
             <div className="flex items-start justify-between">
               <div>
                 <p className={"text-sm font-semibold text-zinc-100 " + fadeTextClass}>
@@ -257,10 +312,10 @@ export default function MagicBento({
                 </div>
               </div>
             </div>
-          </div>
+          </BentoCard>
 
           {/* Skills & Tools */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5">
+          <BentoCard className="rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5">
             <div className="flex items-start justify-between">
               <div>
                 <p className={"text-sm font-semibold text-zinc-100 " + fadeTextClass}>
@@ -303,10 +358,10 @@ export default function MagicBento({
                 ))}
               </div>
             </div>
-          </div>
+          </BentoCard>
 
           {/* Tutorials */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5 lg:col-span-1">
+          <BentoCard className="rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5">
             <div className="flex items-start justify-between">
               <div>
                 <p className={"text-sm font-semibold text-zinc-100 " + fadeTextClass}>
@@ -329,10 +384,10 @@ export default function MagicBento({
                 <div className="h-12 rounded-lg bg-zinc-800/60" />
               </div>
             </div>
-          </div>
+          </BentoCard>
 
           {/* Chat Room */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5 lg:col-span-1">
+          <BentoCard className="rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5">
             <div className="flex items-start justify-between">
               <div>
                 <p className={"text-sm font-semibold text-zinc-100 " + fadeTextClass}>
@@ -357,10 +412,10 @@ export default function MagicBento({
                 Resume Chats
               </button>
             </div>
-          </div>
+          </BentoCard>
 
           {/* Services */}
-          <div className="relative rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5 lg:col-span-1">
+          <BentoCard className="relative rounded-2xl border border-zinc-800/80 bg-zinc-950/20 p-5">
             <div className="flex items-start justify-between">
               <div>
                 <p className={"text-sm font-semibold text-zinc-100 " + fadeTextClass}>
@@ -380,7 +435,7 @@ export default function MagicBento({
             <div className="pointer-events-none absolute bottom-4 right-4 rounded-xl border border-zinc-700/60 bg-zinc-950/20 px-3 py-2 text-xs font-semibold tracking-wider text-zinc-200">
               GUI
             </div>
-          </div>
+          </BentoCard>
         </div>
       </div>
     </section>

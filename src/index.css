@@ -54,6 +54,7 @@
 
 body {
   margin: 0;
+  overflow-x: hidden;
 }
 
 @keyframes texttype-blink {
@@ -75,6 +76,7 @@ body {
 
 #root {
   min-height: 100svh;
+  overflow-x: hidden;
 }
 
 h1,

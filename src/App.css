@@ -1,1 +1,447 @@
-/* Intentionally empty. Styles are handled via Tailwind CSS. */
+.sidebar-link {
+	opacity: 0;
+	transform: translateY(10px);
+	transition-property: opacity, transform, background-color, color;
+	transition-duration: 220ms;
+	transition-timing-function: ease-in-out;
+	will-change: opacity, transform;
+}
+
+.sidebar-link.sidebar-link--open {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.hero-shell {
+	width: 100vw;
+	min-height: 100vh;
+}
+
+.hero-bg-word {
+    
+	text-shadow:
+		0 0 14px rgba(250, 204, 21, 0.42),
+		0 0 42px rgba(250, 204, 21, 0.24),
+		0 0 90px rgba(250, 204, 21, 0.12);
+}
+
+.hero-portrait {
+	filter: drop-shadow(0 32px 55px rgba(0, 0, 0, 0.55));
+}
+
+.hero-menu-toggle {
+	width: 2.25rem;
+	height: 2.25rem;
+	padding: 0;
+}
+
+.about-fullscreen {
+	position: relative;
+	isolation: isolate;
+	background:
+		radial-gradient(circle at 50% 42%, rgba(250, 204, 21, 0.06), transparent 18%),
+		radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.07), transparent 30%),
+		#000;
+}
+
+.about-fullscreen__halo {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: min(86vw, 74rem);
+	height: min(86vw, 74rem);
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	background:
+		radial-gradient(circle, rgba(250, 204, 21, 0.12) 0%, rgba(250, 204, 21, 0.02) 32%, rgba(0, 0, 0, 0) 66%);
+	filter: blur(6px);
+	animation: aboutHaloPulse 6s ease-in-out infinite alternate;
+}
+
+.about-fullscreen__halo-ring {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: min(86vw, 74rem);
+	height: min(86vw, 74rem);
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	border: 2px solid rgba(255, 255, 255, 0.88);
+	box-shadow:
+		0 0 0 1px rgba(250, 204, 21, 0.32),
+		0 0 28px rgba(250, 204, 21, 0.42),
+		0 0 80px rgba(250, 204, 21, 0.18),
+		inset 0 0 22px rgba(255, 255, 255, 0.12);
+	opacity: 0.95;
+	animation: aboutHaloPulse 6s ease-in-out infinite alternate-reverse;
+	pointer-events: none;
+}
+
+.about-shell {
+	position: relative;
+	isolation: isolate;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.05),
+		0 30px 120px rgba(0, 0, 0, 0.55);
+}
+
+.about-shell__backdrop {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	pointer-events: none;
+	border-radius: inherit;
+	background:
+		radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 28%),
+		radial-gradient(circle at 80% 18%, rgba(168, 85, 247, 0.11), transparent 24%),
+		radial-gradient(circle at 50% 110%, rgba(16, 185, 129, 0.08), transparent 34%),
+		linear-gradient(180deg, rgba(3, 7, 18, 0.05), rgba(3, 7, 18, 0.22));
+}
+
+.about-shell__particles {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.about-shell__nebula {
+	position: absolute;
+	inset: -12%;
+	background:
+		radial-gradient(circle at 20% 25%, rgba(59, 130, 246, 0.2), transparent 26%),
+		radial-gradient(circle at 50% 38%, rgba(14, 165, 233, 0.16), transparent 24%),
+		radial-gradient(circle at 75% 28%, rgba(168, 85, 247, 0.16), transparent 20%),
+		radial-gradient(circle at 45% 70%, rgba(245, 158, 11, 0.08), transparent 26%);
+	filter: blur(22px);
+	opacity: 0.95;
+	animation: aboutNebulaDrift 22s ease-in-out infinite alternate;
+}
+
+.about-shell__stars {
+	position: absolute;
+	inset: 0;
+	opacity: 0.9;
+	animation: aboutTwinkle 6s ease-in-out infinite alternate;
+}
+
+.about-shell__stars--primary {
+	background-image:
+		radial-gradient(circle at 9% 16%, rgba(255, 255, 255, 0.92) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 18% 74%, rgba(255, 255, 255, 0.72) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 24% 34%, rgba(255, 255, 255, 0.84) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 36% 12%, rgba(255, 255, 255, 0.88) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 52% 22%, rgba(255, 255, 255, 0.62) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 63% 70%, rgba(255, 255, 255, 0.88) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 74% 16%, rgba(255, 255, 255, 0.78) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 82% 46%, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 91% 24%, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.8px);
+	background-size: cover;
+	animation-duration: 7s;
+}
+
+.about-shell__stars--secondary {
+	background-image:
+		radial-gradient(circle at 12% 52%, rgba(125, 211, 252, 0.75) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 28% 82%, rgba(96, 165, 250, 0.72) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 44% 60%, rgba(192, 132, 252, 0.6) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 56% 12%, rgba(125, 211, 252, 0.55) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 68% 38%, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 79% 78%, rgba(147, 197, 253, 0.7) 0 1px, transparent 1.8px),
+		radial-gradient(circle at 88% 64%, rgba(255, 255, 255, 0.65) 0 1px, transparent 1.8px);
+	opacity: 0.45;
+	animation-duration: 9s;
+	animation-direction: alternate-reverse;
+}
+
+.about-shell__system {
+	position: absolute;
+	right: clamp(-0.5rem, 2vw, 1rem);
+	top: clamp(0.5rem, 2vw, 1.5rem);
+	width: clamp(9rem, 20vw, 15rem);
+	aspect-ratio: 1;
+	opacity: 0.95;
+}
+
+.about-shell__sun {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 3.5rem;
+	height: 3.5rem;
+	transform: translate(-50%, -50%);
+	border-radius: 999px;
+	background: radial-gradient(circle at 35% 35%, #fff6b0 0%, #f59e0b 32%, #fb7185 66%, rgba(251, 113, 133, 0.15) 100%);
+	box-shadow:
+		0 0 24px rgba(245, 158, 11, 0.52),
+		0 0 70px rgba(251, 113, 133, 0.24),
+		0 0 120px rgba(59, 130, 246, 0.08);
+	animation: aboutPulse 5s ease-in-out infinite alternate;
+}
+
+.about-shell__orbit {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	transform: translate(-50%, -50%);
+	animation: aboutOrbit 24s linear infinite;
+}
+
+.about-shell__orbit--one {
+	width: 6.5rem;
+	height: 6.5rem;
+}
+
+.about-shell__orbit--two {
+	width: 9.4rem;
+	height: 9.4rem;
+	animation-duration: 36s;
+	animation-direction: reverse;
+}
+
+.about-shell__planet {
+	position: absolute;
+	left: 50%;
+	top: 0;
+	transform: translate(-50%, -50%);
+	border-radius: 999px;
+	box-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+}
+
+.about-shell__planet--one {
+	width: 0.7rem;
+	height: 0.7rem;
+	background: linear-gradient(135deg, #93c5fd, #2563eb);
+	left: calc(100% - 0.35rem);
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.about-shell__planet--two {
+	width: 0.95rem;
+	height: 0.95rem;
+	background: linear-gradient(135deg, #f9a8d4, #8b5cf6);
+	left: calc(100% - 0.48rem);
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.about-shell__dust {
+	position: absolute;
+	border-radius: 999px;
+	filter: blur(18px);
+	opacity: 0.65;
+	animation: aboutDrift 18s ease-in-out infinite alternate;
+}
+
+.about-shell__dust--one {
+	left: 14%;
+	top: 18%;
+	width: 7rem;
+	height: 7rem;
+	background: rgba(56, 189, 248, 0.08);
+}
+
+.about-shell__dust--two {
+	left: 38%;
+	bottom: 10%;
+	width: 9rem;
+	height: 9rem;
+	background: rgba(168, 85, 247, 0.08);
+	animation-duration: 24s;
+	animation-direction: reverse;
+}
+
+.about-menu__frame {
+	position: relative;
+	margin-top: 0.5rem;
+}
+
+.about-menu__viewport {
+	overflow: hidden;
+	mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+	-webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.about-menu__track {
+	display: flex;
+	gap: 1rem;
+	width: max-content;
+	padding: 0.5rem 0 0.75rem;
+	animation: aboutMenuScroll 34s linear infinite;
+	will-change: transform;
+}
+
+.about-menu__track:hover {
+	animation-play-state: paused;
+}
+
+.about-card {
+	box-shadow:
+		0 18px 48px rgba(0, 0, 0, 0.34),
+		inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.about-card::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 30%, transparent 70%, rgba(255, 255, 255, 0.05));
+	opacity: 0;
+	transition: opacity 220ms ease;
+	pointer-events: none;
+}
+
+.about-card:hover::after {
+	opacity: 1;
+}
+
+@keyframes aboutMenuScroll {
+	from {
+		transform: translate3d(0, 0, 0);
+	}
+	to {
+		transform: translate3d(-50%, 0, 0);
+	}
+}
+
+@keyframes aboutHaloPulse {
+	from {
+		transform: translate(-50%, -50%) scale(0.98);
+		opacity: 0.82;
+	}
+	to {
+		transform: translate(-50%, -50%) scale(1.02);
+		opacity: 1;
+	}
+}
+
+@media (max-width: 900px) {
+	.about-fullscreen__halo,
+	.about-fullscreen__halo-ring {
+		width: min(92vw, 44rem);
+		height: min(92vw, 44rem);
+	}
+}
+
+@keyframes aboutNebulaDrift {
+	from {
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	to {
+		transform: translate3d(0, -12px, 0) scale(1.03);
+	}
+}
+
+@keyframes aboutTwinkle {
+	from {
+		opacity: 0.3;
+		transform: translate3d(0, 0, 0);
+	}
+	to {
+		opacity: 0.9;
+		transform: translate3d(0, -6px, 0);
+	}
+}
+
+@keyframes aboutOrbit {
+	from {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	to {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
+}
+
+@keyframes aboutPulse {
+	from {
+		transform: translate(-50%, -50%) scale(0.98);
+	}
+	to {
+		transform: translate(-50%, -50%) scale(1.04);
+	}
+}
+
+@keyframes aboutDrift {
+	from {
+		transform: translate3d(0, 0, 0);
+	}
+	to {
+		transform: translate3d(0, -10px, 0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.about-shell__nebula,
+	.about-shell__stars,
+	.about-shell__sun,
+	.about-shell__orbit,
+	.about-shell__dust,
+	.about-menu__track,
+	.about-card {
+		animation: none !important;
+		transition: none !important;
+	}
+	.about-menu__viewport {
+		mask-image: none;
+		-webkit-mask-image: none;
+	}
+}
+
+.orbital-shell {
+	box-shadow: inset 0 0 80px rgba(250, 204, 21, 0.05);
+}
+
+.orbital-flow {
+	background-image:
+		radial-gradient(circle at 20% 20%, rgba(250, 204, 21, 0.08), transparent 18%),
+		radial-gradient(circle at 80% 30%, rgba(250, 204, 21, 0.06), transparent 16%),
+		radial-gradient(circle at 50% 80%, rgba(250, 204, 21, 0.05), transparent 14%);
+	background-size: 100% 100%;
+	animation: orbitalFlow 24s ease-in-out infinite alternate;
+	opacity: 0.8;
+}
+
+.orbital-track {
+	animation: orbitalSpin 56s linear infinite;
+	transform-origin: center;
+}
+
+.orbital-planet {
+	transform: translate(-50%, -50%) rotate(var(--orbit-angle)) translateX(var(--orbit-radius)) rotate(calc(var(--orbit-angle) * -1));
+	will-change: transform;
+}
+
+.orbital-planet__content {
+	animation: orbitalCounterSpin 56s linear infinite;
+}
+
+@keyframes orbitalSpin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes orbitalCounterSpin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(-360deg);
+	}
+}
+
+@keyframes orbitalFlow {
+	from {
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	to {
+		transform: translate3d(0, -8px, 0) scale(1.02);
+	}
+}

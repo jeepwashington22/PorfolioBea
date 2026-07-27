@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   BookOpen,
   BriefcaseBusiness,
   Contact,
   FolderKanban,
+  Globe,
   Home,
   LayoutDashboard,
   MessageSquare,
@@ -15,7 +16,13 @@ import {
   LayoutTemplate, 
   Sparkles,       
   WalletCards,    
-  Server          
+  Server,
+  FileText,
+  GraduationCap,
+  Linkedin,
+  Menu,
+  Sparkles as StarSparkle,
+  X,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion" // <--- ADD THIS LINE
 import {
@@ -48,12 +55,14 @@ import {
 
 import TextType from "./TextType"
 import GlareHover from "./GlareHover"
-import LiquidEther from "./components/LiquidEther"
 import MagicBento from "./MagicBento"
+import LogoLoop from "./LogoLoop"
+import AboutInfiniteMenu from "./components/AboutInfiniteMenu"
+import EducationSkillsProcess from "./components/EducationSkillsProcess"
 import TiltedCard from "./components/TiltedCard/TiltedCard"
-import Lanyard from "./Lanyard"
-
-import profilePic from "./assets/profilePic.jpg"
+import "./App.css"
+import Particles from "./components/Particles/Particles"
+import profilePic from "./assets/profilepicc.png"
 
 const projectMediaMap = import.meta.glob(
   "./assets/projectImages/*.{jpg,jpeg,png,webp,mp4}",
@@ -110,54 +119,175 @@ const projectMedia = Object.entries(projectMediaMap)
   }
 ]
 
+const resumeProjects = [
+  {
+    id: "ark-industries",
+    name: "Ark Industries",
+    role: "Fullstack Developer",
+    link: "https://arkindustriesinc.com/login",
+    bullets: [
+      "Developed a geofencing and geotagging attendance system with location-based time-in/time-out validation.",
+      "Implemented an employee scheduling module for managing work shifts.",
+      "Built an automated Daily Time Record (DTR) system that calculates attendance and working hours based on time-in/time-out logic.",
+      "Maintained and enhanced full-stack web application features for performance and reliability.",
+    ],
+  },
+  {
+    id: "infini-stock",
+    name: "Infini-Stock",
+    role: "Fullstack Developer",
+    link: "https://infini-stock.vercel.app/login",
+    bullets: [
+      "Developed a QR code-based asset tracking system that assigns unique identifiers to monitor and CPU inventory for efficient asset management.",
+      "Designed and implemented the mobile application interface and core inventory management logic.",
+      "Built role-based access control (RBAC) to manage permissions for adding, editing, and deleting inventory records.",
+      "Enhanced inventory organization and tracking through secure, streamlined asset management workflows.",
+    ],
+  },
+  {
+    id: "fallguard",
+    name: "FallGuard",
+    role: "Fullstack Developer",
+    link: null,
+    bullets: [
+      "Developed an IoT-based fall detection system integrating a Raspberry Pi, camera module, and mobile application for real-time elderly monitoring.",
+      "Implemented a machine learning-powered detection system to identify potential falls and automatically notify caregivers or family members during emergencies.",
+      "Built full-stack features for real-time alerts, device integration, and emergency response to improve elderly safety and reduce response time.",
+    ],
+  },
+]
+
+const resumeEducation = {
+  school: "University of Caloocan City",
+  degree: "Bachelor of Science in Information Technology",
+  period: "June 2023 - Present",
+  coursework: [
+    "Database Management",
+    "Software Engineering",
+    "Artificial Intelligence",
+    "Programming",
+    "Data Structures and Algorithms",
+    "Internet of Things",
+    "Web Development",
+  ],
+}
+
+const resumeSkillGroups = [
+  {
+    label: "Language",
+    items: ["React", "TypeScript", "Laravel", "PHP", "Python", "Flutter", "Kotlin", "Java", "JavaScript", "HTML", "CSS"],
+  },
+  {
+    label: "Developer Tools",
+    items: ["VS Code", "Figma", "Lovable", "Gemini", "Supabase", "Firebase"],
+  },
+  {
+    label: "Technologies & Frameworks",
+    items: ["Windows", "GitHub", "WordPress", "Excel", "Docs"],
+  },
+]
+
+const heroName = "Jeffrey C. Bonina"
+const heroNameParts = heroName.split(" ")
+
+const heroStats = [
+  { value: "3+", label: "YEARS EXPERIENCE" },
+  { value: "40+", label: "PROJECTS COMPLETED" },
+  { value: "20+", label: "HAPPY CLIENTS" },
+]
+
+function buildMenuImage(title, subtitle, accent, highlight) {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" fill="none">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#020617" />
+          <stop offset="100%" stop-color="#0f172a" />
+        </linearGradient>
+        <radialGradient id="glow" cx="0.5" cy="0.45" r="0.55">
+          <stop offset="0%" stop-color="${accent}" stop-opacity="0.95" />
+          <stop offset="60%" stop-color="${accent}" stop-opacity="0.18" />
+          <stop offset="100%" stop-color="${accent}" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="900" height="900" rx="80" fill="url(#bg)" />
+      <circle cx="450" cy="400" r="255" fill="url(#glow)" />
+      <circle cx="650" cy="170" r="70" fill="${highlight}" fill-opacity="0.16" />
+      <circle cx="250" cy="680" r="110" fill="${highlight}" fill-opacity="0.08" />
+      <path d="M150 620C250 520 330 500 450 520C580 542 660 492 770 362" stroke="${highlight}" stroke-opacity="0.32" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 18" />
+      <text x="70" y="220" fill="#f8fafc" font-size="82" font-family="Arial, Helvetica, sans-serif" font-weight="700">${title}</text>
+      <text x="70" y="285" fill="#cbd5e1" font-size="34" font-family="Arial, Helvetica, sans-serif">${subtitle}</text>
+      <text x="70" y="770" fill="#94a3b8" font-size="28" font-family="Arial, Helvetica, sans-serif">Jeffrey C. Bonina</text>
+    </svg>
+  `
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
+}
+
+const serviceMenuItems = [
+  {
+    image: profilePic,
+    link: "mailto:jeffreybonina05@gmail.com",
+    title: "Introduction",
+    description: "Jeffrey C. Bonina, 3rd-year BSIT student at the University of Caloocan City.",
+  },
+  {
+    image: buildMenuImage("My Role", "Full-stack developer and technical researcher.", "#a78bfa", "#c4b5fd"),
+    link: "https://www.linkedin.com/in/jeffbonina/",
+    title: "My Role",
+    description: "Full-stack developer and technical researcher.",
+  },
+  {
+    image: buildMenuImage("Tech Stack", "React, Flutter, Node.js, PHP, Python, Firebase, and Supabase.", "#38bdf8", "#67e8f9"),
+    link: "#services",
+    title: "Tech Stack",
+    description: "React, Flutter, Node.js, PHP, Python, Firebase, and Supabase.",
+  },
+  {
+    image: buildMenuImage("Specialties", "Mobile, web, IoT, and serverless systems.", "#f59e0b", "#fbbf24"),
+    link: "#services",
+    title: "Specialties",
+    description: "Mobile and web applications, IoT integration (Raspberry Pi, ESP32), and serverless backend architectures.",
+  },
+  {
+    image: buildMenuImage("Focus Areas", "Security-first product thinking.", "#22d3ee", "#67e8f9"),
+    link: "#services",
+    title: "Focus Areas",
+    description: "Developing safety and security systems, and implementing strong data privacy and cybersecurity measures.",
+  },
+]
+
 
 function App() {
   const [activeTab, setActiveTab] = useState("Home")
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [projectQuery, setProjectQuery] = useState("")
   const [projectSort, setProjectSort] = useState("newest")
-  const [isLightMode, setIsLightMode] = useState(false)
   const mainScrollRef = useRef(null)
-  // --- ADD THESE TWO LINES ---
+  const [orbitalServiceTab, setOrbitalServiceTab] = useState(null)
   const [activeServiceTab, setActiveServiceTab] = useState("frontend")
   const activeService = servicesData.find((s) => s.id === activeServiceTab)
+  const orbitalActiveService = orbitalServiceTab
+    ? servicesData.find((s) => s.id === orbitalServiceTab)
+    : null
 
-  const theme = isLightMode
-    ? {
-        shell: "bg-zinc-50 text-zinc-950",
-        shellOverlay: "bg-white/55",
-        sidebar: "border-zinc-200/70 bg-white/60",
-        navActive: "bg-zinc-200/70 text-zinc-950",
-        navInactive:
-          "text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-950",
-        navIcon: "text-zinc-600",
-      }
-    : {
-        shell: "bg-zinc-950 text-zinc-100",
-        shellOverlay: "bg-zinc-900/40",
-        sidebar: "border-zinc-800/80 bg-zinc-950/30",
-        navActive: "bg-zinc-800/70 text-zinc-100",
-        navInactive:
-          "text-zinc-300 hover:bg-zinc-800/40 hover:text-zinc-100",
-        navIcon: "text-zinc-300",
-      }
-  
-  const themeClasses = isLightMode
-        ? {
-            card: "border-zinc-200/70 bg-white/40",
-            text: { primary: "text-zinc-950", secondary: "text-zinc-600", muted: "text-zinc-500" },
-            input: "border-zinc-200/80 bg-white/60 text-zinc-950 placeholder:text-zinc-500 focus:border-zinc-400",
-            inputIcon: "text-zinc-500",
-            border: "border-zinc-200/70",
-            divider: "bg-zinc-300/50",
-        }
-        : {
-        card: "border-zinc-800/80 bg-zinc-950/25",
-        text: { primary: "text-zinc-100", secondary: "text-zinc-300", muted: "text-zinc-500" },
-        input: "border-zinc-800/80 bg-zinc-950/20 text-zinc-200 placeholder:text-zinc-600 focus:border-zinc-700/80",
-        inputIcon: "text-zinc-500",
-        border: "border-zinc-800/80",
-        divider: "bg-zinc-800/80",
-      }
+  const theme = {
+    shell: "bg-[#080808] text-zinc-100",
+    shellOverlay: "bg-[#080808]",
+    sidebar: "border-yellow-400/20 bg-zinc-950/30",
+    navActive: "bg-yellow-400/12 text-yellow-100",
+    navInactive: "text-zinc-300 hover:bg-yellow-400/10 hover:text-yellow-100",
+    navIcon: "text-yellow-300",
+  }
+
+  const themeClasses = {
+    card: "border-zinc-800/80 bg-zinc-950/25",
+    text: { primary: "text-zinc-100", secondary: "text-zinc-300", muted: "text-zinc-500" },
+    input: "border-zinc-800/80 bg-zinc-950/20 text-zinc-200 placeholder:text-zinc-600 focus:border-zinc-700/80",
+    inputIcon: "text-zinc-500",
+    border: "border-zinc-800/80",
+    divider: "bg-zinc-800/80",
+  }
 
   const techStack = [
     { label: "HTML", icon: SiHtml5, iconClassName: "text-orange-300" },
@@ -186,11 +316,36 @@ function App() {
     { label: "Instagram", icon: SiInstagram, iconClassName: "text-zinc-100" },
     { label: "Facebook", icon: SiFacebook, iconClassName: "text-zinc-100" },
   ]
+
+  const techStackLoop = techStack.map((item) => ({
+    title: item.label,
+    node: <item.icon className={`h-8 w-8 ${item.iconClassName ?? "text-zinc-100"}`} aria-hidden="true" />,
+  }))
+
+  const solarStars = [
+    { left: "12%", top: "18%", size: 2, opacity: 0.75 },
+    { left: "22%", top: "10%", size: 1.5, opacity: 0.5 },
+    { left: "35%", top: "24%", size: 2.5, opacity: 0.65 },
+    { left: "78%", top: "15%", size: 2, opacity: 0.6 },
+    { left: "86%", top: "32%", size: 1.5, opacity: 0.5 },
+    { left: "72%", top: "78%", size: 2, opacity: 0.55 },
+    { left: "18%", top: "74%", size: 1.5, opacity: 0.45 },
+    { left: "46%", top: "88%", size: 2.5, opacity: 0.6 },
+    { left: "58%", top: "8%", size: 1.5, opacity: 0.45 },
+    { left: "90%", top: "68%", size: 2, opacity: 0.7 },
+  ]
+  const orbitalDust = Array.from({ length: 18 }).map((_, index) => ({
+    left: `${(index * 17 + 11) % 100}%`,
+    top: `${(index * 29 + 7) % 100}%`,
+    size: 1 + (index % 3) * 0.75,
+    opacity: 0.2 + (index % 5) * 0.11,
+  }))
   // --- ADDED: Services Data ---
 
   const nav = [
     { label: "Home", icon: Home },
     { label: "About", icon: User },
+    { label: "Resume", icon: FileText },
     { label: "Projects", icon: FolderKanban },
     { label: "Tutorials", icon: BookOpen },
     { label: "Dashboard", icon: LayoutDashboard },
@@ -198,29 +353,6 @@ function App() {
     { label: "Services", icon: BriefcaseBusiness },
     { label: "Contact", icon: Contact },
     { label: "Showcase", icon: PanelsTopLeft },
-  ]
-
-  const contacts = [
-    {
-      label: "Instagram",
-      href: "https://instagram.com/beaalyssalugtup",
-      icon: SiInstagram,
-    },
-    {
-      label: "Gmail",
-      href: "mailto:your.email@gmail.com",
-      icon: SiGmail,
-    },
-    {
-      label: "Facebook",
-      href: "https://facebook.com/your.profile",
-      icon: SiFacebook,
-    },
-    {
-      label: "Phone",
-      href: "tel:09000000000",
-      icon: Phone,
-    },
   ]
 
   const projects = useMemo(() => {
@@ -237,14 +369,7 @@ function App() {
         description:
           "A modern, responsive web app built with a focus on clean UI, performance, and scalable architecture.",
         media,
-        stack: [
-          SiReact,
-          SiTypescript,
-          SiTailwindcss,
-          SiNodedotjs,
-          SiMongodb,
-          SiGithub,
-        ],
+        stack: [SiReact, SiTypescript, SiTailwindcss, SiNodedotjs, SiMongodb, SiGithub],
         year: 2026 - (index % 3),
       }
     })
@@ -265,90 +390,452 @@ function App() {
     return sorted
   }, [projectQuery, projectSort])
 
+  const contacts = [
+    {
+      label: "Instagram",
+      href: "https://instagram.com/beaalyssalugtup",
+      icon: SiInstagram,
+    },
+    {
+      label: "Gmail",
+      href: "mailto:jeffreybonina05@gmail.com",
+      icon: SiGmail,
+    },
+    {
+      label: "Facebook",
+      href: "https://facebook.com/your.profile",
+      icon: SiFacebook,
+    },
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/in/jeffbonina/",
+      icon: Linkedin,
+    },
+    {
+      label: "Phone",
+      href: "tel:+639763726478",
+      icon: Phone,
+    },
+  ]
+
+  const handleNavClick = (label) => {
+    setActiveTab(label)
+    setIsSidebarOpen(false)
+    mainScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
   return (
-    <div
-      className={
-        "relative h-screen w-screen transition-colors duration-500 " + theme.shell
+    <>
+            <section className="hero-shell relative isolate min-h-[100svh] w-full overflow-hidden border border-yellow-400/30 bg-[#080808] px-5 py-6 shadow-[0_0_0_1px_rgba(250,204,21,0.08),0_24px_80px_rgba(0,0,0,0.45)] sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+              <div className="absolute inset-0 overflow-hidden">
+                <Particles
+                  className="absolute inset-0 pointer-events-auto"
+                  particleColors={["#ffffff"]}
+                  particleCount={200}
+                  particleSpread={10}
+                  speed={0.1}
+                  particleBaseSize={100}
+                  moveParticlesOnHover={true}
+                  alphaParticles={false}
+                  disableRotation={false}
+                  pixelRatio={1}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(8,8,8,0.38),rgba(8,8,8,0.12),rgba(8,8,8,0.38))]" />
+              </div>
+              <div className="pointer-events-none absolute inset-0 border border-white/5" />
+              <div className="hero-bg-word pointer-events-none absolute inset-x-0 top-[25%] -translate-y-1/2 select-none text-center text-[clamp(4.2rem,15vw,15rem)] font-black uppercase leading-none tracking-[-0.08em] word-spacing:40px">
+                <span className="block text-yellow-300">PORTFOLIO</span>
+            
+              </div>
+
+              <div className="relative z-10 flex min-h-[calc(100svh-12rem)] flex-col">
+                <div className="flex items-start justify-between gap-4 text-[10px] font-semibold uppercase tracking-[0.34em] sm:text-[11px]">
+                  <div className="space-y-1">
+                    <p className="text-yellow-300">WEB DESIGNER</p>
+                    <p className="text-zinc-500">DIGITAL CREATOR</p>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-right text-zinc-500">
+                    <span>AVAILABLE FOR FREELANCE</span>
+                    <StarSparkle className="h-3.5 w-3.5 text-yellow-300" aria-hidden="true" />
+                  </div>
+                </div>
+
+                <div className="relative mt-8 grid flex-1 items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.85fr)] lg:gap-16">
+                  <div className="relative z-20 max-w-2xl mt-14 lg:mt-20">
+                    <p className="text-[clamp(1.4rem,2.2vw,2.1rem)] leading-none text-white" style={{ fontFamily: "cursive" }}>
+                      Hello, I&apos;m
+                    </p>
+
+                    <h1 className="max-w-xl text-[clamp(2.6rem,6.2vw,5.1rem)] font-black uppercase leading-[0.86] tracking-[-0.08em] text-white">
+                      <span className="block">{heroNameParts.slice(0, 2).join(" ")}</span>
+                      <span className="block">{heroNameParts.slice(2).join(" ") || heroName}</span>
+                    </h1>
+
+                    <p className="mt-4 text-[clamp(0.75rem,0.95vw,0.95rem)] font-semibold uppercase tracking-[0.24em] text-yellow-400">
+                      WEB DESIGNER & UI/UX CREATOR
+                    </p>
+
+                    <p className="mt-4 max-w-[30rem] text-xs leading-6 text-zinc-400 sm:text-sm">
+                      I design stylish, user-focused web experiences that balance bold visuals with clear
+                      structure, combining creative direction and strategy to build memorable digital products.
+                    </p>
+
+                    <div className="mt-10 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
+                      <Globe className="h-4 w-4 text-zinc-400" aria-hidden="true" />
+                      <span>AVAILABLE WORLDWIDE</span>
+                    </div>
+                  </div>
+
+                  <div className="relative z-20 flex flex-col justify-end gap-6 pb-8 lg:min-h-[34rem]">
+                    <div className="mt-auto space-y-4 lg:ml-auto lg:max-w-[20rem]">
+                      <div className="flex items-center gap-4 rounded-[1.5rem] border border-white/8 bg-white/[0.03] px-4 py-3 backdrop-blur-sm">
+                        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-yellow-300/40 bg-yellow-300/10 text-yellow-300">
+                          <Sparkles className="h-6 w-6" aria-hidden="true" />
+                        </div>
+                        <p className="max-w-[12rem] text-xs leading-5 text-zinc-300">
+                          Turning ideas into powerful digital experiences.
+                        </p>
+                      </div>
+
+                      <div className="space-y-0 border-t border-zinc-700/60">
+                        {heroStats.map((stat, index) => (
+                          <div key={stat.label} className={"flex items-start gap-4 py-3 " + (index > 0 ? "border-t border-zinc-700/60" : "") }>
+                            <div className="min-w-[4.5rem] text-[clamp(1.6rem,3vw,2.6rem)] font-black leading-none text-yellow-300">
+                              {stat.value}
+                            </div>
+                            <div className="pt-1 text-[10px] font-semibold uppercase tracking-[0.32em] text-zinc-400">
+                              {stat.label}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pointer-events-none absolute left-1/2 top-[55%] z-30 w-[min(84vw,36rem)] -translate-x-1/2 -translate-y-1/2 lg:w-[min(40vw,38rem)]">
+                    <div className="relative mx-auto aspect-[4/5] max-w-[38rem]">
+                      <img
+                        src={profilePic}
+                        alt="Portrait of Jeffrey C. Bonina"
+                        className="absolute inset-0 z-10 h-full w-full object-contain drop-shadow-[0_24px_45px_rgba(0,0,0,0.55)]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="relative w-full border-t border-yellow-400/20 bg-[#080808] px-5 py-3 sm:px-8 lg:px-10">
+              <div className="mx-auto w-full max-w-[1800px]">
+  
+                <LogoLoop
+                  logos={techStackLoop}
+                  speed={140}
+                  logoHeight={72}
+                  gap={72}
+                  hoverSpeed={0}
+                  scaleOnHover
+                  fadeOut
+                  fadeOutColor="#080808"
+                  ariaLabel="Tech stack logo loop"
+                />
+              </div>
+            </section>
+
+            <section className="relative w-full overflow-hidden border-t border-yellow-400/20 bg-[#080808] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+              <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.10),rgba(8,8,8,0)_34%),radial-gradient(circle_at_top,rgba(250,204,21,0.05),rgba(8,8,8,0)_40%),linear-gradient(180deg,rgba(8,8,8,0.08),rgba(8,8,8,0.55))]" />
+                <div className="absolute inset-0 orbital-flow" />
+                {orbitalDust.map((dust, index) => (
+                  <span
+                    key={`${dust.left}-${dust.top}-${index}`}
+                    className="absolute block rounded-full bg-yellow-100"
+                    style={{
+                      left: dust.left,
+                      top: dust.top,
+                      width: `${dust.size}px`,
+                      height: `${dust.size}px`,
+                      opacity: dust.opacity,
+                      boxShadow: "0 0 12px rgba(250,204,21,0.4)",
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div className="relative mx-auto grid w-full max-w-[1800px] gap-12 lg:grid-cols-[minmax(460px,1fr)_minmax(0,1.1fr)] lg:items-center">
+                <div className="space-y-5">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-yellow-300">
+                      Services
+                    </p>
+                    <h2 className="mt-2 text-sm font-medium uppercase tracking-[0.28em] text-zinc-400">
+                      Solar system selector
+                    </h2>
+                  </div>
+
+                  <div className="orbital-shell relative mx-auto flex aspect-square w-full max-w-[640px] items-center justify-center overflow-hidden rounded-full border border-yellow-400/10 bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.14),rgba(8,8,8,0)_40%),radial-gradient(circle_at_center,rgba(255,255,255,0.04),rgba(8,8,8,0)_74%)] shadow-[inset_0_0_120px_rgba(250,204,21,0.05)]">
+                    <div className="pointer-events-none absolute inset-[1.5%] rounded-full border border-yellow-400/10" />
+                    <div className="pointer-events-none absolute inset-[12%] rounded-full border border-yellow-400/10" />
+                    <div className="pointer-events-none absolute inset-[24%] rounded-full border border-yellow-400/10" />
+                    <div className="pointer-events-none absolute inset-[36%] rounded-full border border-yellow-400/10" />
+                    <div className="pointer-events-none absolute inset-[48%] rounded-full border border-yellow-400/10" />
+                    <div className="pointer-events-none absolute inset-[60%] rounded-full bg-yellow-300/10 blur-3xl" />
+
+                    <div className="absolute inset-0 orbital-track">
+                      <div className="absolute inset-0">
+                        {servicesData.map((service, index) => {
+                          const Icon = service.icon
+                          const isActive = orbitalServiceTab === service.id
+                          const angle = (index / servicesData.length) * 360 - 90
+                          const radius = 225
+
+                          return (
+                            <button
+                              key={service.id}
+                              type="button"
+                              onClick={() => setOrbitalServiceTab(service.id)}
+                              className={
+                                "orbital-planet group absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border transition-all duration-300 ease-in-out " +
+                                (isActive
+                                  ? "border-yellow-300/60 bg-yellow-300/15 text-yellow-100 shadow-[0_0_0_1px_rgba(250,204,21,0.26),0_0_30px_rgba(250,204,21,0.18)]"
+                                  : "border-zinc-800/80 bg-zinc-950/60 text-zinc-500 hover:border-yellow-400/30 hover:text-yellow-100")
+                              }
+                              aria-pressed={isActive}
+                              style={{
+                                "--orbit-angle": `${angle}deg`,
+                                "--orbit-radius": `${radius}px`,
+                              }}
+                            >
+                              <span className="orbital-planet__content flex h-10 w-10 items-center justify-center rounded-full border border-inherit bg-inherit">
+                                <Icon className="h-5 w-5" aria-hidden="true" />
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="pointer-events-none absolute inset-0">
+                      {solarStars.map((star, index) => (
+                        <span
+                          key={`${star.left}-${star.top}-${index}`}
+                          className="absolute block rounded-full bg-yellow-100"
+                          style={{
+                            left: star.left,
+                            top: star.top,
+                            width: `${star.size}px`,
+                            height: `${star.size}px`,
+                            opacity: star.opacity,
+                            boxShadow: "0 0 10px rgba(250,204,21,0.45)",
+                          }}
+                        />
+                      ))}
+                    </div>
+
+                    <div className="service-sun relative z-20 flex h-36 w-36 flex-col items-center justify-center rounded-full border border-yellow-300/35 bg-[#080808]/92 text-center shadow-[0_0_0_1px_rgba(250,204,21,0.18),0_0_80px_rgba(250,204,21,0.16)]">
+                      <Sparkles className="h-8 w-8 text-yellow-300 drop-shadow-[0_0_14px_rgba(250,204,21,0.5)]" aria-hidden="true" />
+                      <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-yellow-300">
+                        Available
+                      </p>
+                        <p className="mt-2 max-w-[8rem] text-[11px] leading-5 text-zinc-400">
+                        Rotate the orbit
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative min-h-[28rem] overflow-hidden">
+                  <AnimatePresence mode="wait" initial={false}>
+                    {orbitalActiveService ? (
+                      <motion.div
+                        key={orbitalServiceTab}
+                        initial={{ opacity: 0, x: 120 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 120 }}
+                        transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1] }}
+                        className="service-panel h-full rounded-[2rem] border border-yellow-400/20 bg-white/[0.02] p-6 backdrop-blur-md shadow-[0_0_0_1px_rgba(250,204,21,0.06),0_28px_70px_rgba(0,0,0,0.35)] sm:p-8 lg:p-10"
+                      >
+                        <div className="flex h-full flex-col gap-6">
+                          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                            <div className="max-w-2xl">
+                              <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-yellow-300">
+                                {orbitalActiveService.label}
+                              </p>
+                              <h3 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">
+                                {orbitalActiveService.title}
+                              </h3>
+                              <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+                                {orbitalActiveService.description}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center gap-3 rounded-full border border-yellow-400/15 bg-yellow-400/8 px-4 py-3 text-sm text-zinc-300">
+                              <div className="grid h-10 w-10 place-items-center rounded-full border border-yellow-300/30 bg-yellow-300/10 text-yellow-300">
+                                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                              </div>
+                              <p className="max-w-[18rem] text-sm leading-6 text-zinc-300">
+                                Highlighting the specific service you can choose to work on.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-auto grid gap-6 md:grid-cols-2">
+                            <div>
+                              <h4 className="text-xs font-semibold uppercase tracking-[0.28em] text-zinc-500">
+                                Core Capabilities
+                              </h4>
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {orbitalActiveService.skills.map((skill) => (
+                                  <span
+                                    key={skill}
+                                    className="rounded-full border border-yellow-400/15 bg-yellow-400/8 px-3 py-1.5 text-xs font-medium text-zinc-300"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <h4 className="text-xs font-semibold uppercase tracking-[0.28em] text-zinc-500">
+                                Tech & Tools
+                              </h4>
+                              <div className="mt-3 flex flex-wrap gap-3">
+                                {orbitalActiveService.tools.map((tool) => {
+                                  const ToolIcon = tool.icon
+
+                                  return (
+                                    <div
+                                      key={tool.name}
+                                      className="group relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800/80 bg-zinc-950/40 transition-colors hover:border-yellow-400/30"
+                                      title={tool.name}
+                                      aria-label={tool.name}
+                                    >
+                                      <ToolIcon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" style={{ color: tool.color }} aria-hidden="true" />
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <div className="grid h-full min-h-[24rem] place-items-center rounded-[2rem] border border-dashed border-yellow-400/20 bg-white/[0.02] p-8 text-center text-zinc-400 backdrop-blur-md">
+                        <div className="max-w-md">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-yellow-300">
+                            No service selected
+                          </p>
+                          <p className="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">
+                            Rotate the orbit and select a planet to reveal the service details with a smooth ease-in animation.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </section>
+            <div>
+              <EducationSkillsProcess />
+            </div>
+            <AboutInfiniteMenu />
+      <div className={
+        "relative min-h-screen w-full overflow-x-hidden transition-colors duration-500 " + theme.shell
       }
     >
-      <div className="pointer-events-none absolute inset-0">
-        <LiquidEther
-          colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
-          mouseForce={20}
-          cursorSize={100}
-          isViscous
-          viscous={30}
-          iterationsViscous={32}
-          iterationsPoisson={32}
-          resolution={0.5}
-          isBounce={false}
-          autoDemo
-          autoSpeed={0.5}
-          autoIntensity={2.2}
-          takeoverDuration={0.25}
-          autoResumeDelay={3000}
-          autoRampDuration={0.6}
-          className="h-full w-full"
-        />
-      </div>
-
-      <div className="pointer-events-auto fixed right-6 top-6 z-50">
-        <Lanyard
-          position={[0, 0, 0]}
-          gravity={[0, -40, 0]}
-          size={88}
-          small
-          theme={isLightMode ? "light" : "dark"}
-          onToggle={() => setIsLightMode((v) => !v)}
-        />
-      </div>
-
       <div
         className={
           "relative flex h-full w-full min-h-0 overflow-hidden transition-colors duration-500 " +
           theme.shellOverlay
         }
       >
+        <button
+          type="button"
+          onClick={() => setIsSidebarOpen((current) => !current)}
+          className="hero-menu-toggle fixed right-4 top-4 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border border-yellow-300/35 bg-zinc-950/80 text-yellow-300 shadow-lg backdrop-blur-xl transition-transform duration-200 ease-in-out hover:scale-105"
+          aria-label={isSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isSidebarOpen}
+          aria-controls="site-sidebar"
+        >
+          {isSidebarOpen ? <X className="h-4 w-4" aria-hidden="true" /> : <Menu className="h-4 w-4" aria-hidden="true" />}
+        </button>
+
+        <AnimatePresence>
+          {isSidebarOpen ? (
+            <motion.button
+              type="button"
+              aria-label="Close navigation menu"
+              className="fixed inset-0 z-30 cursor-default border-0 bg-black/50 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              onClick={() => setIsSidebarOpen(false)}
+            />
+          ) : null}
+        </AnimatePresence>
+
         <aside
+          id="site-sidebar"
           className={
-            "hidden w-[250px] shrink-0 border-r p-5 transition-colors duration-500 md:block " +
+            "fixed inset-y-0 left-0 z-40 w-[285px] max-w-[85vw] border-r p-5 shadow-2xl backdrop-blur-xl transition-transform duration-300 ease-in-out " +
+            (isSidebarOpen ? "translate-x-0" : "-translate-x-full") +
+            " " +
             theme.sidebar
           }
+          aria-hidden={!isSidebarOpen}
         >
-          <div className="flex items-center gap-3">
-            <div className="relative h-10 w-10 overflow-hidden rounded-full border border-zinc-700 bg-zinc-800">
-              <img
-                src={profilePic}
-                alt="Profile"
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="truncate text-sm font-semibold text-zinc-100">
-                  Bea Alyssa Lugtu
-                </p>
-                <span className="inline-flex items-center rounded-md border border-zinc-700/80 bg-zinc-900/50 px-1.5 py-0.5 text-[10px] leading-none text-zinc-200">
-                  US
-                </span>
+          <div className="flex items-center justify-between gap-3 pr-14">
+            <div className="flex items-center gap-3">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full border border-zinc-700 bg-zinc-800">
+                <img
+                  src={profilePic}
+                  alt="Profile"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
               </div>
-              <p className="truncate text-xs text-zinc-400">@beaalyssalugtup</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="truncate text-sm font-semibold text-zinc-100">
+                    Jeffrey C. Bonina
+                  </p>
+                  <span className="inline-flex items-center rounded-md border border-zinc-700/80 bg-zinc-900/50 px-1.5 py-0.5 text-[10px] leading-none text-zinc-200">
+                    PH
+                  </span>
+                </div>
+                <p className="truncate text-xs text-zinc-400">@jeffreybonina</p>
+              </div>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(false)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800/80 bg-zinc-900/60 text-zinc-200 transition-colors hover:bg-zinc-800/80 hover:text-white"
+              aria-label="Close navigation menu"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
           </div>
 
           <nav className="mt-5 space-y-1">
-            {nav.map((item) => {
+            {nav.map((item, index) => {
               const Icon = item.icon
               const isActive = activeTab === item.label
+              const revealDelay = isSidebarOpen ? `${140 + index * 70}ms` : "0ms"
+
               return (
                 <button
                   key={item.label}
                   type="button"
-                  onClick={() => setActiveTab(item.label)}
+                  onClick={() => handleNavClick(item.label)}
                   className={
-                    "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors " +
-                    (isActive ? theme.navActive : theme.navInactive)
+                    "sidebar-link flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors " +
+                    (isActive ? theme.navActive : theme.navInactive) +
+                    (isSidebarOpen ? " sidebar-link--open" : "")
                   }
+                  style={{ transitionDelay: revealDelay }}
                   aria-current={isActive ? "page" : undefined}
                 >
                   <Icon className={`h-4 w-4 ${theme.navIcon}`} />
@@ -361,14 +848,14 @@ function App() {
 
         <main
           ref={mainScrollRef}
-          className="min-h-0 flex-1 overflow-y-auto p-5 md:p-7"
+          className="min-h-0 flex-1 overflow-y-auto p-5 pt-20 md:p-7 md:pt-20 [scroll-behavior:smooth]"
         >
           {activeTab === "Home" ? (
             <>
               <header className="mb-5">
-                <h1 className={"text-md font-semibold tracking-tight transition-colors duration-500 " + (isLightMode ? "text-zinc-950" : "text-zinc-100")}>
+                <h1 className={"text-md font-semibold tracking-tight transition-colors duration-500 text-zinc-100"}>
                   <TextType
-                    texts={["Hello, I'm Bea Alyssa Lugtu.", "A Software Developer"]}
+                    texts={["Hello, I'm Jeffrey C. Bonina.", "Web Developer"]}
                     typingSpeed={75}
                     pauseDuration={1500}
                     showCursor
@@ -390,6 +877,15 @@ function App() {
 
                   </p>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleNavClick("Resume")}
+                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_0_15px_rgba(37,99,235,0.35)] transition-colors hover:bg-blue-500"
+                >
+                  <FileText className="h-4 w-4" aria-hidden="true" />
+                  View My Resume
+                </button>
               </header>
 
               {/* --- SKILLS SECTION WITH BIGGER COLORED ICONS --- */}
@@ -582,196 +1078,15 @@ function App() {
               </div>
             </>
           ) : activeTab === "About" ? (
-         <>
-              <div className="mx-auto w-full max-w-6xl 2xl:max-w-7xl pb-10">
-                <header className="mb-8">
-                  <h1 className={"text-md font-bold tracking-tight transition-colors duration-500 " + themeClasses.text.primary}>About Me</h1>
-                  <p className={"mt-2 text-sm transition-colors duration-500 " + themeClasses.text.muted}>
-                    A quick snapshot of who I am and what I build.
-                  </p>
-                </header>
-
-                {/* --- HERO PROFILE CARD --- */}
-                <motion.section 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 backdrop-blur-2xl shadow-2xl"
-                >
-                  {/* Subtle Background Glows */}
-                  <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-blue-500/10 blur-[80px]"></div>
-                  <div className="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-purple-500/10 blur-[80px]"></div>
-
-                  <div className="relative z-10 flex flex-col items-center gap-8 md:flex-row md:items-center md:gap-10">
-                    <div className="shrink-0 drop-shadow-2xl">
-                      <TiltedCard
-                        imageSrc={profilePic}
-                        altText="Profile photo"
-                        captionText="Bea Alyssa Lugtu"
-                        containerHeight="160px"
-                        containerWidth="160px"
-                        imageHeight="160px"
-                        imageWidth="160px"
-                        rotateAmplitude={12}
-                        scaleOnHover={1.05}
-                        showMobileWarning={false}
-                        showTooltip
-                        displayOverlayContent
-                        overlayContent={
-                          <p className="tilted-card-demo-text rounded-full bg-black/40 px-3 py-1 font-bold text-white backdrop-blur-md">
-                          </p>
-                        }
-                      />
-                    </div>
-
-                    <aside className="min-w-0 flex-1 text-center md:text-left">
-                      <h2 className="bg-gradient-to-br from-white to-zinc-400 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl">
-                        Bea Alyssa Lugtu
-                      </h2>
-                      <div className="mt-3 flex flex-wrap items-center justify-center gap-3 md:justify-start">
-                        <span className="rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-medium tracking-wide text-blue-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
-                          Software Developer
-                        </span>
-                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium tracking-wide text-zinc-300">
-                          📍 Caloocan City, NCR
-                        </span>
-                      </div>
-
-                      <p className={"mt-5 text-sm leading-relaxed max-w-2xl md:text-base transition-colors duration-500 " + themeClasses.text.muted}>
-                        Full-stack developer focused on frontend-first product experiences — building
-                        responsive UIs, robust APIs, and LLM integrations that feel genuinely useful rather than gimmicky.
-                      </p>
-                    </aside>
-                  </div>
-                </motion.section>
-
-                {/* --- THE STORY CARD --- */}
-                <motion.section 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
-                  className="mt-6 relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 backdrop-blur-2xl shadow-2xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
-                >
-                  <h3 className={"flex items-center gap-4 text-xs font-semibold uppercase tracking-widest mb-6 transition-colors duration-500 " + themeClasses.text.muted}>
-                    <span className={"h-px w-8 transition-colors duration-500 " + themeClasses.divider}></span> The Story
-                  </h3>
-                  <div className={"space-y-5 text-sm md:text-base leading-relaxed transition-colors duration-500 " + themeClasses.text.secondary}>
-                    <p>
-                      I'm a Computer Science student who fell in love with building things people
-                      actually use. I focus on frontend-first full-stack development — turning ideas
-                      into fast, scalable web apps with React, TypeScript, Node.js, and Tailwind CSS.
-                    </p>
-                    <p>
-                      I've shipped real client work including a CMS and an e-commerce platform, and I
-                      also build AI agents powered by LLMs (OpenAI and Gemini) to deliver intelligent,
-                      context-aware experiences. I enjoy bridging hardware and software too —
-                      especially IoT projects that help communities stay safe and connected.
-                    </p>
-                  </div>
-                </motion.section>
-
-                {/* --- EDUCATION & EXPERIENCE GRID --- */}
-                <section className="mt-6 grid gap-6 md:grid-cols-2">
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-                    className="group rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 backdrop-blur-2xl shadow-2xl transition-all hover:bg-white/[0.03]"
-                  >
-                    <div className="mb-6 flex items-center gap-3">
-                      <div className="grid h-10 w-10 place-items-center rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-400 transition-transform group-hover:scale-110">
-                        <BookOpen className="h-5 w-5" />
-                      </div>
-                      <h3 className={"text-lg font-bold transition-colors duration-500 " + themeClasses.text.primary}>Education</h3>
-                    </div>
-                    <div className="space-y-2 border-l-2 border-zinc-800 pl-4 relative">
-                      <div className="absolute -left-[5px] top-2 h-2 w-2 rounded-full bg-blue-500" />
-                      <p className="text-base font-semibold text-zinc-200">
-                        University of Caloocan City
-                      </p>
-                      <p className="text-sm font-medium text-zinc-400">BS Computer Science</p>
-                      <p className="text-xs text-zinc-500">Aug 2022 – Apr 2026</p>
-                    </div>
-                  </motion.div>
-
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
-                    className="group rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 backdrop-blur-2xl shadow-2xl transition-all hover:bg-white/[0.03]"
-                  >
-                    <div className="mb-6 flex items-center gap-3">
-                      <div className="grid h-10 w-10 place-items-center rounded-xl border-purple-500/20 bg-purple-500/10 text-purple-400 transition-transform group-hover:scale-110">
-                        <BriefcaseBusiness className="h-5 w-5" />
-                      </div>
-                      <h3 className={"text-lg font-bold transition-colors duration-500 " + themeClasses.text.primary}>Experience</h3>
-                    </div>
-                    <div className="space-y-4 text-sm text-zinc-300">
-                      <p className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-purple-500/50">
-                        Built and shipped client-facing products like a CMS and an e-commerce platform,
-                        with a strong focus on usability, performance, and maintainable architecture.
-                      </p>
-                      <p className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-1.5 before:w-1.5 before:rounded-full before:bg-purple-500/50">
-                        Developed AI agents and LLM features (OpenAI + Gemini) for smarter workflows and
-                        context-aware user experiences, plus IoT work bridging hardware + software.
-                      </p>
-                    </div>
-                  </motion.div>
-                </section>
-
-                {/* --- TECH STACK SECTION --- */}
-                <motion.section 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
-                  className="mt-6 rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 backdrop-blur-2xl shadow-2xl relative overflow-hidden"
-                >
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
-                    <div>
-                      <h3 className={"flex items-center gap-4 text-xs font-semibold uppercase tracking-widest mb-2 transition-colors duration-500 " + themeClasses.text.muted}>
-                        <span className={"h-px w-8 transition-colors duration-500 " + themeClasses.divider}></span> Tech Stack
-                      </h3>
-                      <p className={"text-sm leading-relaxed transition-colors duration-500 " + themeClasses.text.muted}>
-                        The tools, platforms, and languages I use across web, backend, and AI.
-                      </p>
-                    </div>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-600 hidden sm:block animate-pulse">
-                      Scroll ↓
-                    </p>
-                  </div>
-
-                  {/* Added a fading edge mask for the scroll area */}
-                  <div className="relative">
-                    <div className="max-h-[320px] overflow-y-auto pr-2 pb-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800">
-                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {techStack.map((item) => {
-                          const Icon = item.icon
-                          return (
-                            <div
-                              key={item.label}
-                              className="group flex items-center gap-4 rounded-2xl border border-white/5 bg-white/5 p-3 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-white/10 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-white/10"
-                            >
-                              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-white/10 bg-zinc-900/50 shadow-inner transition-transform duration-300 group-hover:scale-110">
-                                <Icon
-                                  className={`h-6 w-6 ${item.iconClassName ?? "text-zinc-200"}`}
-                                  aria-hidden="true"
-                                />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-bold text-zinc-200 transition-colors group-hover:text-white">
-                                  {item.label}
-                                </p>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                    {/* Bottom fade out gradient */}
-                    <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#131315] to-transparent"></div>
-                  </div>
-                </motion.section>
-              </div>
+            <AboutInfiniteMenu />
+          ) : activeTab === "Resume" ? (
+            <>
+              <header className="mb-5">
+                <h1 className="text-lg font-semibold tracking-tight text-zinc-100">
+                  {activeTab}
+                </h1>
+                <p className="mt-1 text-sm text-zinc-400">Coming soon.</p>
+              </header>
             </>
           ) : activeTab === "Services" ? (
             <>
@@ -893,6 +1208,7 @@ function App() {
                   </motion.div>
                 </AnimatePresence>
               </div>
+
             </>
           ) : (
             <>
@@ -927,6 +1243,7 @@ function App() {
         })}
       </div>
     </div>
+    </>
   )
 }
 
